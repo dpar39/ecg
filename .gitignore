@@ -1,4 +1,4 @@
-/build_release_x64
-/thirdparty/eigen-eigen-da9b4e14c255
+/build_*
+/thirdparty
 /visualstudio
-/thirdparty/gmock-1.7.0
+/install_*
