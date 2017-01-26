@@ -224,8 +224,8 @@ class Builder:
         self._build_clean = args.clean
         self._build_config = args.build_config
         self._gen_vs_sln = args.gen_vs_sln
-        self._run_tests = not args.run_tests
-        self._run_install = not args.run_install
+        self._run_tests = args.run_tests
+        self._run_install = args.run_install
 
         # directory suffix for the build and release
         self._root_dir = os.path.dirname(os.path.realpath(__file__))

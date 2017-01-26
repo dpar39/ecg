@@ -19,7 +19,13 @@ public:
 
     static ECGSignalGeneratorSPtr fromDaqViewFile(const std::string &ecgFileName);
 
+    void play(double playSpeed) override;
 
+    void stop() override;
+
+    void connectSampleEvent(ECGSampleEvent evnt) override;
+
+    void disconnectSampleEvent(ECGSampleEvent evnt) override;
 
 private:
 

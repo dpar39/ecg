@@ -34,5 +34,5 @@ TEST_F(ECGSignalGeneratorFixture, CanLoadSignalFromFile)
 
 TEST_F(ECGSignalGeneratorFixture, SamplesAreGeneratedAtSamplingRate)
 {
-
+    ASSERT_TRUE(true);
 }

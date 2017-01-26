@@ -98,3 +98,25 @@ ECGSignalGeneratorSPtr ECGSignalGenerator::fromDaqViewFile(const std::string &ec
     }
     return instance;
 }
+
+
+
+void ECGSignalGenerator::play(double playSpeed)
+{
+    
+}
+
+void ECGSignalGenerator::stop()
+{
+    
+}
+
+void ECGSignalGenerator::connectSampleEvent(ECGSampleEvent evnt)
+{
+    
+}
+
+void ECGSignalGenerator::disconnectSampleEvent(ECGSampleEvent evnt)
+{
+    
+}
