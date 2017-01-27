@@ -6,7 +6,7 @@
 
 void ECGGenerator::play(double playSpeed)
 {
-    if (m_playFuture.wait_for(std::chrono::seconds(0))
+    if (m_playFuture.valid() && m_playFuture.wait_for(std::chrono::seconds(0))
         == std::future_status::timeout)
     {
         // We are already playing
@@ -14,9 +14,9 @@ void ECGGenerator::play(double playSpeed)
         return;
     }
 
-    m_playFuture = std::async(std::launch::async, [&]()
+    m_isPlaying = true;
+    m_playFuture = std::async(std::launch::async, [playSpeed, this]()
     {
-        m_playing = true;
         auto it = m_ecgSignal->cbegin();
         auto itBeg = m_ecgSignal->cbegin();
         auto itEnd = m_ecgSignal->cend();
@@ -28,7 +28,7 @@ void ECGGenerator::play(double playSpeed)
             {
                 onSampleGenerated(*it++);
             }
-            while (it != itEnd && m_playing);
+            while (it != itEnd && m_isPlaying);
         }
         else
         {
@@ -40,14 +40,20 @@ void ECGGenerator::play(double playSpeed)
                 auto newTime = startPlayTime + std::chrono::nanoseconds(std::distance(itBeg, it)*actualPeriod_ns);
                 std::this_thread::sleep_until(newTime);
             } 
-            while (it != itEnd && m_playing);
+            while (it != itEnd && m_isPlaying);
         }
+        m_isPlaying = false;
     });
+}
+
+bool ECGGenerator::isPlaying() const
+{
+    return m_isPlaying;
 }
 
 void ECGGenerator::stop()
 {
-    m_playing = false;
+    m_isPlaying = false;
     m_playFuture.get();
 }
 

@@ -6,10 +6,8 @@
 #include "IECGGenerator.h"
 #include "IECGSignal.h"
 
-#include <boost/signals2.hpp>
-#include <thread>
 #include <future>
-#include <set>
+
 
 FORWARD_DECL(ECGGenerator)
 
@@ -22,7 +20,11 @@ public:
     {
     }
 
+
     void play(double playSpeed) override;
+
+    bool isPlaying() const override;;
+
 
     void stop() override;
 
@@ -37,7 +39,7 @@ private:
 
     std::future<void> m_playFuture;
 
-    bool m_playing;
+    bool m_isPlaying;
 
     void onSampleGenerated(const ECGSample &sample);
 

@@ -59,8 +59,8 @@ set(TEST_LIB_DIRS
     ${MODULE_INC_DIRS}
 )
 
-add_executable(${TEST_NAME} ${TEST_ALL_FILES} ${LIB_HDR_FILES})
+add_executable(${TEST_NAME} ${TEST_ALL_FILES})
 link_directories(${TEST_LIB_DIRS})
 target_link_libraries(${TEST_NAME} ${TEST_LIB_DEPS})
 
-add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} --gtest_output=xml:${TEST_NAME}.xml)
+add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} --gtest_output=xml:${TEST_NAME}.xml) 
