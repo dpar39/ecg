@@ -1,21 +1,15 @@
 #pragma once
 #include <functional>
 
-FORWARD_DECL(IECGSignalGenerator)
+FORWARD_DECL(IECGGenerator)
 
-typedef std::function<void(const ECGSample &)> ECGSampleEvent;
+typedef std::function<void(const ECGSample &)> ECGSampleCallback;
+typedef std::shared_ptr<ECGSampleCallback> ECGSampleCallbackSPtr;
 
-class IECGSignalGenerator
+class IECGGenerator
 {
 public:
-    /*!@brief ECG record length in seconds !*/
-    virtual double recordLengthSec() const = 0;
 
-    /*!@brief Number of channels in ECG record !*/
-    virtual size_t numChannels() const = 0;
-
-    /*!@brief ECG signal sampling rate in Hz !*/
-    virtual double sampleRateHz() const = 0;
 
     /*!@brief Starts playing the ECG signal
      *!@param[in] playSpeed Ratio to real time sampling rate. Passing a negative value generates the samples as fast as possible! */
@@ -25,11 +19,11 @@ public:
     virtual void stop() = 0;
 
     /*!@brief Connects the event fired when a new ECG sample is available !*/
-    virtual void connectSampleEvent(ECGSampleEvent evnt) = 0;
+    virtual ECGSampleCallbackSPtr connectSampleEvent(ECGSampleCallback &evnt) = 0;
 
     /*!@brief Disconnects a callback invoked every time a new ECG sample is available. If such callback doesn't exist nothing happens !*/
-    virtual void disconnectSampleEvent(ECGSampleEvent evnt) = 0;
+    virtual void disconnectSampleEvent(ECGSampleCallbackSPtr registration) = 0;
 
 public:
-    virtual ~IECGSignalGenerator() = default;
+    virtual ~IECGGenerator() = default;
 };

@@ -213,7 +213,7 @@ class Builder:
         parser = argparse.ArgumentParser(description='Builds my cool passport photo print generator application.')
         parser.add_argument('--arch_name', help='Target platform [x86 | x64]', default=default_arch_name)
         parser.add_argument('--build_config', help='Builds the code base in [debug | release] mode', default=default_build_cfg)
-        parser.add_argument('--clean', help='Cleans the whole build directory', action="store_false")
+        parser.add_argument('--clean', help='Cleans the whole build directory', action="store_true")
         parser.add_argument('--run_tests', help='Run existing unit tests', action="store_true")
         parser.add_argument('--run_install', help='Runs install commands', action="store_true")
         parser.add_argument('--gen_vs_sln', help='Generates Visual Studio solution and projects', action="store_true")

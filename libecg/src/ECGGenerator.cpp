@@ -1,122 +1,89 @@
-#include "ECGSignalGenerator.h"
-#include <fstream>
-#include <map>
-#include <sstream>
-#include <iostream>
+#include "ECGGenerator.h"
+
+#include <thread>
+#include <future>
 
 
-// static
-ECGSignalGeneratorSPtr ECGSignalGenerator::fromDaqViewFile(const std::string &ecgFileName)
+void ECGGenerator::play(double playSpeed)
 {
-    auto instance = std::make_shared<ECGSignalGenerator>();
-
-    auto io$FileName = ecgFileName + ".IO$";
-    auto iotFileName = ecgFileName + ".IOT";
-
-    try 
+    if (m_playFuture.wait_for(std::chrono::seconds(0))
+        == std::future_status::timeout)
     {
-        // Read metadata for ECG record
-        std::ifstream io$(io$FileName, std::ios::in);
+        // We are already playing
+        // TODO: Log this
+        return;
+    }
 
-        std::vector<double> resol_uV;
+    m_playFuture = std::async(std::launch::async, [&]()
+    {
+        m_playing = true;
+        auto it = m_ecgSignal->cbegin();
+        auto itBeg = m_ecgSignal->cbegin();
+        auto itEnd = m_ecgSignal->cend();
 
-        std::string line;
-        while (io$.good())
+        if (playSpeed <= 0)
         {
-            std::getline(io$, line);
-            if (line == "*FREQUENCY")
+            // Play samples as fast as possible
+            do
             {
-                io$ >> instance->m_samplingRateHz;
-                continue;
+                onSampleGenerated(*it++);
             }
-
-            if (line == "*CHANNELS")
-            {
-                while (io$.good())
-                {
-                    getline(io$, line);
-                    if (line.empty() || line[0] == '*')
-                    {
-                        continue;
-                    }
-
-                    int chNum;
-                    double resolution_uV;
-                    char chName[12];
-                    char chUnits[12];
-                    sscanf(line.c_str(), "%d,%f,%s,%s", &chNum, &resolution_uV, chName, chUnits);
-                    resol_uV.push_back(resolution_uV);
-                }
-            }
+            while (it != itEnd && m_playing);
         }
-
-
-        std::ifstream iotStream(iotFileName, std::ios::binary | std::ios::in);
-        iotStream.seekg(0, iotStream.end);
-        auto byteLength = iotStream.tellg();
-        iotStream.seekg(0, iotStream.beg);
-
-        auto numValues = byteLength / sizeof(int16_t);
-
-        std::vector<int16_t> rawData(numValues);
-        iotStream.read(reinterpret_cast<char *> (rawData.data()), byteLength);
-
-        instance->m_numChannels = resol_uV.size();
-
-
-        switch (instance->numChannels())
+        else
         {
-        case 1:
-            for (auto it = rawData.cbegin(); it != rawData.cend(); it += 1)
+            auto startPlayTime = std::chrono::steady_clock::now();
+            auto actualPeriod_ns = ROUND_INT(1000000.0 / m_ecgSignal->sampleRateHz() / playSpeed);
+            do
             {
-                instance->m_samples.emplace_back(it[0] / resol_uV[0],
-                    NAN, NAN, NAN);
-            }
-            break;
-        case 3:
-            for (auto it = rawData.cbegin(); it != rawData.cend(); it += 3)
-            {
-                instance->m_samples.emplace_back(it[0] / resol_uV[0],
-                    it[1] / resol_uV[1], it[2] / resol_uV[2], NAN);
-            }
-            break;
-        case 4:
-            for (auto it = rawData.cbegin(); it != rawData.cend(); it += 4)
-            {
-                instance->m_samples.emplace_back(it[0] / resol_uV[0],
-                    it[1] / resol_uV[1], it[2] / resol_uV[2], it[3] / resol_uV[3]);
-            }
-            break;
-        default:
-            return nullptr;
+                onSampleGenerated(*it++);
+                auto newTime = startPlayTime + std::chrono::nanoseconds(std::distance(itBeg, it)*actualPeriod_ns);
+                std::this_thread::sleep_until(newTime);
+            } 
+            while (it != itEnd && m_playing);
+        }
+    });
+}
+
+void ECGGenerator::stop()
+{
+    m_playing = false;
+    m_playFuture.get();
+}
+
+ECGSampleCallbackSPtr ECGGenerator::connectSampleEvent(ECGSampleCallback& evnt)
+{
+    std::lock_guard<std::mutex> g(m_mutex);
+
+    auto registration = std::make_shared<ECGSampleCallback>(std::move(evnt));
+    m_observers.push_back(registration);
+    return registration;
+}
+
+void ECGGenerator::disconnectSampleEvent(ECGSampleCallbackSPtr registration)
+{
+    std::lock_guard<std::mutex> g(m_mutex);
+
+    auto it = std::find(m_observers.begin(), m_observers.end(), registration);
+    if (it != m_observers.end())
+    {
+        m_observers.erase(it);
+    }
+}
+
+void ECGGenerator::onSampleGenerated(const ECGSample& sample)
+{
+    std::lock_guard<std::mutex> g(m_mutex);
+    for (const auto &observer : m_observers)
+    {
+        try 
+        {
+            (*observer)(sample);
+        }
+        catch(const std::exception &e)
+        {
+            // TODO: Log this exception
+            throw e;
         }
     }
-    catch(const std::runtime_error &e)
-    {
-        std::cout << "Unable to load file: " << e.what() << std::endl;
-        return nullptr;
-    }
-    return instance;
-}
-
-
-
-void ECGSignalGenerator::play(double playSpeed)
-{
-    
-}
-
-void ECGSignalGenerator::stop()
-{
-    
-}
-
-void ECGSignalGenerator::connectSampleEvent(ECGSampleEvent evnt)
-{
-    
-}
-
-void ECGSignalGenerator::disconnectSampleEvent(ECGSampleEvent evnt)
-{
-    
 }

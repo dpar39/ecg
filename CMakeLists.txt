@@ -41,7 +41,7 @@ if (WIN32)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS)
 endif()
 
-# Configure shared data
+# Configure shared data for tests
 configure_file("${CMAKE_SOURCE_DIR}/data/config.h.in" "${CMAKE_SOURCE_DIR}/data/config.h")
 include_directories(${CMAKE_SOURCE_DIR})
 

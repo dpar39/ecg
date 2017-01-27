@@ -1,37 +1,45 @@
 #pragma once
+#include <vector>
 
 #include "common.h"
 
-#include "IECGSignalGenerator.h"
-#include <vector>
+#include "IECGGenerator.h"
+#include "IECGSignal.h"
 
-FORWARD_DECL(ECGSignalGenerator)
+#include <boost/signals2.hpp>
+#include <thread>
+#include <future>
+#include <set>
 
-class ECGSignalGenerator : public IECGSignalGenerator
+FORWARD_DECL(ECGGenerator)
+
+class ECGGenerator : public IECGGenerator
 {
 public:
 
-    size_t numChannels() const override { return m_numChannels; }
-
-    double recordLengthSec() const { return m_samples.size() / m_samplingRateHz; }
-
-    double sampleRateHz() const { return m_samplingRateHz; }
-
-    static ECGSignalGeneratorSPtr fromDaqViewFile(const std::string &ecgFileName);
+    explicit ECGGenerator(const IECGSignalSPtr& ecgSignal)
+        : m_ecgSignal(ecgSignal)
+    {
+    }
 
     void play(double playSpeed) override;
 
     void stop() override;
 
-    void connectSampleEvent(ECGSampleEvent evnt) override;
+    ECGSampleCallbackSPtr connectSampleEvent(ECGSampleCallback& evnt) override;
 
-    void disconnectSampleEvent(ECGSampleEvent evnt) override;
+    void disconnectSampleEvent(ECGSampleCallbackSPtr registration) override;
 
 private:
+    IECGSignalSPtr m_ecgSignal;
 
-    std::vector<ECGSample> m_samples;
+    std::vector<std::shared_ptr<ECGSampleCallback>> m_observers;
 
-    size_t m_numChannels;
+    std::future<void> m_playFuture;
 
-    double m_samplingRateHz;
+    bool m_playing;
+
+    void onSampleGenerated(const ECGSample &sample);
+
+    std::mutex m_mutex;
 };
