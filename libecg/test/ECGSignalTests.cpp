@@ -2,7 +2,7 @@
 
 #include "data/config.h"
 
-#include "ECGSignal.h"
+#include "Signal.h"
 
 
 class ECGSignalTests : public ::testing::Test

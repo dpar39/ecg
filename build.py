@@ -39,7 +39,7 @@ class Builder:
     """
     Holds all the methods needed to build code
     """
-    def _detectVSVersion(self):
+    def detect_vs_version(self):
         """
         Detects the first available version of Visual Studio
         """
@@ -54,7 +54,7 @@ class Builder:
                     self._vc_cmake_gen += ' Win64'
                 break
 
-    def _runCmd(self, cmd_args):
+    def run_command(self, cmd_args):
         """
         Runs a shell command
         """
@@ -63,7 +63,7 @@ class Builder:
         if IsWindows:
             # Load visual studio environmental variables first
             if not hasattr(self, '_vcvarsbat'):
-                self._detectVSVersion()
+                self.detect_vs_version()
             cmd_all = [self._vcvarsbat, self._arch_name, '&&', 'set', 'CL=/MP', '&&']
         else:
             env['CXXFLAGS'] = '-fPIC'
@@ -78,7 +78,7 @@ class Builder:
             os.chdir(self._root_dir)
             sys.exit(process.returncode)
 
-    def _runCmake(self, cmake_generator, cmakelists_path='.', extra_definitions=[]):
+    def run_cmake(self, cmake_generator, cmakelists_path='.', extra_definitions=[]):
         """
         Runs CMake with the specified generator in the specified path with possibly some extra definitions
         """
@@ -92,9 +92,9 @@ class Builder:
             cmake_args.append(elmt)
 
         cmake_args.append(cmakelists_path)
-        self._runCmd(cmake_args)
+        self.run_command(cmake_args)
 
-    def _setStartupProjectInVSSolution(self, project_name):
+    def set_startup_prj_in_vs_sln(self, project_name):
         solution_file = glob.glob(self._build_dir + '/*.sln')[0]
         sln_lines = []
         with open(solution_file) as f:
@@ -113,22 +113,22 @@ class Builder:
             + sln_lines[2:lin_prj_beg] + sln_lines[lin_prj_end+1:]
         with open(solution_file, "w") as f:
             f.writelines(["%s\n" % item  for item in prj_lines])
-        self._runCmd(['call', 'devenv', solution_file])
+        self.run_command(['call', 'devenv', solution_file])
 
-    def _donwloadAndExtractGMock(self, override=False):
+    def download_and_extract_gmock(self, override=False):
         """
         Extract and build GMock libraries
         """
         # Download GMOCK sources if not done yet
-        gmock_src_pkg = self._downloadThirdPartyLib(gmock_src_url)
+        gmock_src_pkg = self.download_third_party_lib(gmock_src_url)
         # Get the file prefix for POCO
-        gmock_extract_dir = self._getThridPartyLibDirectory('gmock')
+        gmock_extract_dir = self.get_third_party_lib_dir('gmock')
 
         if gmock_extract_dir is None:
             # Extract the source files
-            self._extractThirdPartyLibrary(gmock_src_pkg)
+            self.extract_third_party_lib(gmock_src_pkg)
 
-    def _getThridPartyLibDirectory(self, prefix):
+    def get_third_party_lib_dir(self, prefix):
         """
         Get the directory where a third party library with the specified prefix name was extracted, if any
         """
@@ -138,7 +138,7 @@ class Builder:
                 return os.path.join(self._third_party_dir, lib_dir)
         return None
 
-    def _getFileNameFromUrl(self, url):
+    def get_filename_from_url(self, url):
         """
         Extracts the file name from a given URL
         """
@@ -146,11 +146,11 @@ class Builder:
         lib_filepath = os.path.join(self._third_party_dir, lib_filename)
         return lib_filepath
 
-    def _downloadThirdPartyLib(self, url, ):
+    def download_third_party_lib(self, url):
         """
         Download a third party dependency from the internet if is not available offline
         """
-        lib_filepath = self._getFileNameFromUrl(url)
+        lib_filepath = self.get_filename_from_url(url)
         if not os.path.exists(lib_filepath):
             print 'Downloading ' + url + ' to "' + lib_filepath + '" please wait ...'
             import urllib2
@@ -159,7 +159,7 @@ class Builder:
                  output.write(lib_file.read())
         return lib_filepath
 
-    def _extractThirdPartyLibrary(self, lib_src_pkg):
+    def extract_third_party_lib(self, lib_src_pkg):
         """
         Extracts a third party lib package source file into a directory
         """
@@ -175,7 +175,10 @@ class Builder:
                 tar.extract(item, self._third_party_dir)
             tar.close()
 
-    def _buildCMakeLibrary(self, cmakelists_path, extra_definitions=[], targets=[], clean_build=False):
+    def build_cmake_library(self, cmakelists_path, extra_definitions=[], targets=[], clean_build=False):
+        """
+        Builds a cmake library
+        """
         build_dir = os.path.join(cmakelists_path, 'build')
         # Clean and create the build directory
         if clean_build and os.path.exists(build_dir): # Remove the build directory
@@ -184,11 +187,9 @@ class Builder:
             os.mkdir(build_dir)
 
         # Define CMake generator and make command
-        cmake_generator = ''
-        make_cmd = ''
         if IsWindows:
             cmake_generator = 'NMake Makefiles'
-            make_cmd = ['set','MAKEFLAGS=', '&&', 'nmake', 'VEBOSITY=1']
+            make_cmd = ['set', 'MAKEFLAGS=', '&&', 'nmake', 'VEBOSITY=1']
         else:
             cmake_generator = 'Unix Makefiles'
             make_cmd = ['make', MinusJN, 'install']
@@ -198,13 +199,16 @@ class Builder:
             '-G', cmake_generator] + extra_definitions
         cmake_cmd.append(cmakelists_path)
         # Run CMake and Make
-        self._runCmd(cmake_cmd)
-        self._runCmd(make_cmd)
+        self.run_command(cmake_cmd)
+        self.run_command(make_cmd)
         for target in targets:
-            self._runCmd(make_cmd + [target])
+            self.run_command(make_cmd + [target])
         os.chdir(self._root_dir)
 
-    def _parseArguments(self):
+    def parse_arguments(self):
+        """
+        Parses the arguments from the command line
+        """
         default_arch_name = 'x64'
         default_build_cfg = 'release'
         if IsWindows:
@@ -237,7 +241,7 @@ class Builder:
             self._build_dir = os.path.join(self._root_dir, 'visualstudio')
 
 
-    def _buildProject(self):
+    def build_project(self):
         # Build actions
         if self._build_clean and os.path.exists(self._build_dir):
              # Remove the build directory - clean
@@ -258,40 +262,35 @@ class Builder:
         if self._gen_vs_sln:
             # Generating visual studio solution
             cmake_generator = self._vc_cmake_gen
-            self._runCmake(cmake_generator, '..')
-            self._setStartupProjectInVSSolution('ppp_test')
+            self.run_cmake(cmake_generator, '..')
+            self.set_startup_prj_in_vs_sln('codec_test')
         else:
             # Building the project code from the command line
-            self._runCmake(cmake_generator, '..')
-            self._runCmd(make_cmd)
+            self.run_cmake(cmake_generator, '..')
+            self.run_command(make_cmd)
             if self._run_tests:
-                self._runCmd(make_cmd + ['test'])
+                self.run_command(make_cmd + ['test'])
             if self._run_install:
-                self._runCmd(make_cmd + ['install'])
+                self.run_command(make_cmd + ['install'])
             os.chdir(self._root_dir)
 
-            if not IsWindows:
-                # Build the node addon with node-gyp
-                self._buildInstallAddonNodeGyp()
-            # Run addon integration test
-            os.chdir(self._install_dir)
-            self._runCmd(['node', "./test.js"])
         os.chdir(self._root_dir)
 
     def __init__(self):
         # Detect OS version
-        self._parseArguments()
+        self.parse_arguments()
+
         if IsWindows:
-            self._detectVSVersion()
+            self.detect_vs_version()
 
         # Create install directory if it doesn't exist
         if not os.path.exists(self._install_dir):
             os.mkdir(self._install_dir)
 
         # Build Third party libs
-        self._donwloadAndExtractGMock()
+        self.download_and_extract_gmock()
 
         # Build this project
-        self._buildProject()
+        self.build_project()
 
 b = Builder()

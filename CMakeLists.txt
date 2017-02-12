@@ -58,4 +58,9 @@ enable_testing()
 include_directories(libecg/include)
 add_subdirectory(libecg)
 
+# Add the ECG library for build and tests
+include_directories(libcodec/include)
+add_subdirectory(libcodec)
+
+
 

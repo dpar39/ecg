@@ -1,5 +1,5 @@
 
-#include "ECGSignal.h"
+#include "Signal.h"
 #include <iostream>
 #include <fstream>
 
