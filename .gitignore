@@ -3,3 +3,4 @@
 /visualstudio
 /install_*
 /.vscode/.ropeproject
+/data/config.h
