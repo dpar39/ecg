@@ -1,20 +1,19 @@
 #ifndef ECGSignalH
 #define ECGSignalH
 
-#include <cmath>
 #include "BWCoder.h"
 #include "CommonDef.h"
+#include <cmath>
+#include <string>
 #include <vector>
 
-//This class is the core of the Program 
-class Signal
-{
+//This class is the core of the Program
+class Signal {
 private:
     void ForwardLinearPredictionBlock(short* x, int len);
     void InverseLinearPredictionBlock(short* x, int len);
     void ForwardSPTransformBlock(short* x, int len, short*& s, short*& d);
     short* InverseSPTransformBlock(short* s, short* d, int len);
-
 
     BYTE* CompressLead(short* s, int s_len, int& enc_len);
     short* ExpandLead(BYTE*& stream, int& s_len);
@@ -37,7 +36,7 @@ public:
     double a;
 
     //Parameters for BWT compression
-    BWC bw, bwS, bwD; //bwS and bwD are the compression parameters 
+    BWC bw, bwS, bwD; //bwS and bwD are the compression parameters
     //for the low pass and high pass coeff of the S+P transform
 
     //Linear Prediction Method

@@ -1,7 +1,6 @@
-#ifndef CommonDefH
-#define CommonDefH
+#pragma once
 
-#include <memory.h>
+#include <memory>
 
 typedef unsigned char BYTE;
 typedef unsigned short WORD;
@@ -29,7 +28,7 @@ double calculate_aml(short* buffer, int* p, int seq_len);
 double lpc0(short* x, unsigned xLen);
 
 template <class P, class Q>
-void copy_vector(register P* dest, register Q* source, register int Len)
+void copy_vector(P* dest, Q* source, int Len)
 {
     if (sizeof(P) != sizeof(Q))
         while (Len--) *dest++ = *source++;
@@ -38,16 +37,16 @@ void copy_vector(register P* dest, register Q* source, register int Len)
 }
 
 template <class T>
-void reset_vector(register T* dest, register int Len)
+void reset_vector(T* dest, int Len)
 {
     memset(dest, 0, Len * sizeof(T));
 }
 
 template <class T>
-void flipud(register T* p, register int Len)
+void flipud(T* p, int Len)
 {
-    register T val;
-    register T* q = p + Len - 1;
+    T val;
+    T* q = p + Len - 1;
     Len /= 2;
     while (Len--)
     {
@@ -58,7 +57,7 @@ void flipud(register T* p, register int Len)
 }
 
 template <class T>
-void min_max_element(register T* p, register int len, T& min, T& max)
+void min_max_element(T* p, int len, T& min, T& max)
 {
     max = min = *p;
     while (--len)
@@ -71,7 +70,7 @@ void min_max_element(register T* p, register int len, T& min, T& max)
 }
 
 template <class T>
-T sum(T* p, register int Len)
+T sum(T* p, int Len)
 {
     T sum = 0;
     while (Len--)
@@ -80,14 +79,14 @@ T sum(T* p, register int Len)
 }
 
 template <class T>
-void bias2unbias(register T* v, register int vLen)
+void bias2unbias(T* v, int vLen)
 {
     while (vLen--)
         *v++ = (*v >= 0) ? (*v) * 2 : (*v) * (-2) - 1;
 }
 
 template <class T>
-void unbias2bias(register T* v, register int vLen)
+void unbias2bias(T* v, int vLen)
 {
     while (vLen--)
         *v++ = (*v % 2) ? (*v) / (-2) - 1 : (*v) / 2;
@@ -98,7 +97,7 @@ void diff(T* v, int vLen, double a)
 {
     T* v_copy = new T[vLen];
     copy_vector(v_copy, v, vLen);
-    for (register int i = 1; i < vLen; i++)
+    for (int i = 1; i < vLen; i++)
         v[i] -= round(a * v_copy[i - 1]);
     delete[] v_copy;
 }
@@ -106,7 +105,7 @@ void diff(T* v, int vLen, double a)
 template <class T>
 void integrate(T* v, int vLen, double a)
 {
-    for (register int i = 1; i < vLen; i++)
+    for (int i = 1; i < vLen; i++)
         v[i] += round(a * v[i - 1]);
 }
 
@@ -169,4 +168,3 @@ bool read_array_from_file(T* data, unsigned data_len, char* filename)
         return false;
     }
 }
-#endif

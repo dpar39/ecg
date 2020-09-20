@@ -100,8 +100,8 @@ void BWCDecode(BWC& block)
     short* bwt_seq = nullptr;
     int* F = nullptr;
 
-    register int k;
-    register short* sptr; //cicle variables
+     int k;
+     short* sptr; //cicle variables
 
     block.m_bwtIndex = ReadUnsigned(3, pstream);
     short min = ReadInt(2, pstream);
@@ -158,7 +158,7 @@ short* ForwardBWT(BWC& blck)
 
     blck.m_bwtIndex = blck.input_len;
     short** suffixes = new short*[blck.input_len + 1];
-    for (register unsigned i = 0; i <= blck.input_len; ++i)
+    for ( unsigned i = 0; i <= blck.input_len; ++i)
         suffixes[i] = blck.symbols + i;
 
     /* Sort the suffixes using Bentley-Sedgewick Faster ternary quick sort version */
@@ -181,7 +181,7 @@ short* ForwardBWT(BWC& blck)
 
 short* InverseBWT(short* bwt_seq, unsigned Len, unsigned index, short offset)
 {
-    register int k, tmp, I = 0;
+     int k, tmp, I = 0;
     short* rec_seq = new short[Len];
     int* P = new int[Len];
     int* C = new int[ALPHA_LEN];

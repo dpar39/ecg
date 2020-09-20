@@ -9,7 +9,7 @@
 #include "CommonDef.h"
 #include "BWCoder.h"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 // Thread Function to encode/decode data...
 DWORD WINAPI ThreadProc( LPVOID lpParam )
@@ -65,7 +65,7 @@ void   Signal::readECG(const std::string& ecgFilePath)
 
     m_numSamples = 0;
 
-    auto extension = boost::filesystem::extension(ecgFilePath);
+    auto extension = std::filesystem::extension(ecgFilePath);
 
     using namespace std;
 

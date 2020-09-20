@@ -1,0 +1,4 @@
+bind-addr: 127.0.0.1:49000
+auth: password
+password: vscodeRocks!20110517 # This is randomly generated for each config.yaml
+cert: false

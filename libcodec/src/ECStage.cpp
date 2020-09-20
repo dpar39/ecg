@@ -19,7 +19,7 @@ void EntropyEncode(int *v, unsigned vLen, int E2Level, BYTE *&stream)
     m3 = m2 + vLen;
     m0 = m3 + vLen;
 
-    register unsigned j;
+    unsigned j;
     int _e, _b;
     BYTE maxE2 = 0;
     unsigned m1Len = 0, m2Len = 0, m3Len = 0,
@@ -98,7 +98,7 @@ void EntropyDecode(int *v, unsigned vLen, int E2Level, BYTE *&stream)
 {
     unsigned m1Len, m2Len, m3Len, m0Len, e2Len;
     BYTE *e2, *m1, *m2, *m3, *m0;
-    register unsigned j;
+    unsigned j;
     BYTE maxE2, _e, _ee;
     int b;
     BYTE *e = new BYTE[vLen];
@@ -346,7 +346,7 @@ void TCModel::Reset()
 void TCModel::Update(int index)
 {
     int i, cum_freq;
-    register int *ptr;
+    int *ptr;
 
     if (m_n)
     {
@@ -404,11 +404,11 @@ void TCModel::Update(int index)
 
     //Set Current Frequencies
     cum_freq = 0;
-    register int *s_0 = m_context_freqs_0 + m_alphabet_len;
-    register int *s_1 = m_context_freqs_1[m_context_1] + m_alphabet_len;
-    register int *s_n = m_context_freqs_n[m_context_n] + m_alphabet_len;
+    int *s_0 = m_context_freqs_0 + m_alphabet_len;
+    int *s_1 = m_context_freqs_1[m_context_1] + m_alphabet_len;
+    int *s_n = m_context_freqs_n[m_context_n] + m_alphabet_len;
 
-    for (register int *ptr = m_cum_freqs + m_alphabet_len; ptr >= m_cum_freqs;)
+    for (int *ptr = m_cum_freqs + m_alphabet_len; ptr >= m_cum_freqs;)
     {
         *ptr-- = cum_freq;
         cum_freq += *s_0-- + *s_1-- + *s_n-- + 1;
@@ -438,10 +438,10 @@ void TCModel::Update(int index)
 void TCModel::SetCurrentFrequencies()
 {
     int cum_freq = 0;
-    register int *s_0 = m_context_freqs_0 + m_alphabet_len;
-    register int *s_1 = m_context_freqs_1[m_context_1] + m_alphabet_len;
-    register int *s_n = m_context_freqs_n[m_context_n] + m_alphabet_len;
-    for (register int *ptr = m_cum_freqs + m_alphabet_len; ptr >= m_cum_freqs;)
+    int *s_0 = m_context_freqs_0 + m_alphabet_len;
+    int *s_1 = m_context_freqs_1[m_context_1] + m_alphabet_len;
+    int *s_n = m_context_freqs_n[m_context_n] + m_alphabet_len;
+    for (int *ptr = m_cum_freqs + m_alphabet_len; ptr >= m_cum_freqs;)
     {
     *ptr-- = cum_freq;
     cum_freq += *s_0-- + *s_1-- + *s_n-- + 1;

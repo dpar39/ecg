@@ -1,0 +1,1 @@
+python %~dp0\build.py -a x64 wasm web --test

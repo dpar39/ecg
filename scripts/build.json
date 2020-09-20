@@ -1,0 +1,230 @@
+{
+  "x64": {
+    "windows": {
+      "QT_DIR": "C:\\Qt\\5.12.6\\msvc2017_64",
+      "CC": "cl.exe",
+      "CXX": "cl.exe"
+    },
+    "linux": {
+      "CC": "clang",
+      "CXX": "clang++"
+    }
+  },
+  "emsdk": {
+    "version": "1.39.17-upstream",
+    "config": {
+      "ASSERTIONS": 2,
+      "ALLOW_MEMORY_GROWTH": 1,
+      "DISABLE_EXCEPTION_CATCHING": 0,
+      "TOTAL_MEMORY": 67108864,
+      "RESERVED_FUNCTION_POINTERS": 1,
+      "EXTRA_EXPORTED_RUNTIME_METHODS": "['addFunction','removeFunction']",
+      "FETCH": 1,
+      "WASM": 1,
+      "MODULARIZE": 1,
+      "EXPORT_NAME": "'libyaiat'"
+    },
+    "cxxFlags": {
+      "common": "--bind -std=c++17",
+      "debug": "-g --source-map-base http://127.0.0.1:8100/",
+      "release": "-O2"
+    }
+  },
+  "android": {
+    "sdk": {
+      "windows": "https://dl.google.com/android/repository/sdk-tools-windows-4333796.zip",
+      "osx": "https://dl.google.com/android/repository/sdk-tools-darwin-4333796.zip",
+      "linux": "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip"
+    },
+    "gradle": "https://services.gradle.org/distributions/gradle-4.10.3-bin.zip"
+  },
+  "thirdPartyLibs": [
+    {
+      "name": "sdl",
+      "srcUrl": "https://libsdl.org/release/SDL2-2.0.12.zip",
+      "downloadPkg": "SDL2-2.0.12.zip",
+      "extractDir": "SDL2-2.0.12",
+      "cmakeExtraDefinitions": {
+        "common": [
+          "SDL_TEST=OFF",
+          "SDL_SHARED=OFF",
+          "SDL_STATIC=ON"
+        ],
+        "windows": [
+          "FORCE_STATIC_VCRT=ON"
+        ]
+      },
+      "installChecks": [
+        "cmake/SDL2Config.cmake",
+        "lib/cmake/SDL2/SDL2Config.cmake"
+      ],
+      "architectures": [
+        "NONE"
+      ]
+    },
+    {
+      "name": "opencv-contrib",
+      "srcUrl": "https://github.com/opencv/opencv_contrib/archive/4.1.2.zip",
+      "downloadPkg": "opencv-contrib-4.1.2.zip",
+      "extractDir": "opencv_contrib-4.1.2",
+      "headerOnly": true,
+      "architectures": [
+        "NONE"
+      ]
+    },
+    {
+      "name": "opencv",
+      "srcUrl": "https://github.com/opencv/opencv/archive/4.1.2.zip",
+      "downloadPkg": "opencv-4.1.2.zip",
+      "extractDir": "opencv-4.1.2",
+      "cmakeExtraDefinitions": {
+        "common": [
+          "BUILD_SHARED_LIBS=OFF",
+          "BUILD_DOCS=OFF",
+          "BUILD_PERF_TESTS=OFF",
+          "BUILD_ILMIMF=ON",
+          "BUILD_ZLIB=ON",
+          "BUILD_JASPER=ON",
+          "BUILD_PNG=ON",
+          "BUILD_JPEG=ON",
+          "BUILD_TIFF=OFF",
+          "BUILD_opencv_apps=OFF",
+          "BUILD_DOCS=OFF",
+          "BUILD_TESTS=OFF",
+          "WITH_JASPER=ON",
+          "WITH_PYTHON=OFF",
+          "WITH_PYTHON2=OFF",
+          "WITH_JAVA=OFF",
+          "WITH_FFMPEG=OFF",
+          "WITH_MSMF=OFF",
+          "WITH_VFW=OFF",
+          "WITH_OPENEXR=OFF",
+          "WITH_WEBP=OFF",
+          "WITH_TIFF=OFF",
+          "BUILD_opencv_java=OFF",
+          "BUILD_opencv_python=OFF",
+          "BUILD_opencv_python2=OFF",
+          "BUILD_opencv_python3=OFF",
+          "BUILD_opencv_python_bindings_generator=OFF",
+          "OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.1.2/modules"
+        ],
+        "desktop": [
+          "BUILD_TBB=ON",
+          "BUILD_LIST=objdetect,imgproc,imgcodecs,highgui,dnn,ximgproc"
+        ],
+        "windows": [
+          "BUILD_WITH_STATIC_CRT=ON"
+        ],
+        "wasm": [
+          "CV_ENABLE_INTRINSICS=OFF",
+          "ENABLE_PIC=FALSE",
+          "BUILD_IPP_IW=OFF",
+          "WITH_TBB=OFF",
+          "WITH_OPENMP=OFF",
+          "WITH_PTHREADS_PF=OFF",
+          "WITH_OPENCL=OFF",
+          "WITH_IPP=OFF",
+          "WITH_ITT=OFF",
+          "CPU_BASELINE=''",
+          "CPU_DISPATCH=''",
+          "BUILD_LIST=objdetect,imgproc,imgcodecs,dnn"
+        ]
+      },
+      "installChecks": [
+        "lib/cmake/opencv4",
+        "OpenCVConfig.cmake"
+      ],
+      "architectures": [
+        "NONE"
+      ]
+    },
+    {
+      "name": "dlib",
+      "srcUrl": "https://github.com/davisking/dlib/archive/v19.19.zip",
+      "downloadPkg": "dlib-19.19.zip",
+      "extractDir": "dlib-19.19",
+      "cmakeExtraDefinitions": {
+        "common": [
+          "DLIB_JPEG_SUPPORT=OFF",
+          "DLIB_PNG_SUPPORT=OFF",
+          "DLIB_NO_GUI_SUPPORT=ON"
+        ],
+        "windows": [
+          "DLIB_FORCE_MSVC_STATIC_RUNTIME=ON"
+        ]
+      },
+      "installChecks": [
+        "lib/cmake/dlib"
+      ],
+      "architectures": [
+        "NONE"
+      ]
+    },
+    {
+      "name": "googletest",
+      "srcUrl": "https://github.com/google/googletest/archive/release-1.8.1.zip",
+      "downloadPkg": "googletest-1.8.1.zip",
+      "extractDir": "googletest-release-1.8.1",
+      "cmakeExtraDefinitions": {
+        "common": []
+      },
+      "installChecks": [
+        "lib/cmake/GTest"
+      ],
+      "architectures": [
+        "x64"
+      ]
+    },
+    {
+      "name": "rapidjson",
+      "srcUrl": "https://github.com/Tencent/rapidjson/archive/v1.1.0.zip",
+      "downloadPkg": "rapidjson-1.1.0.zip",
+      "extractDir": "rapidjson-1.1.0",
+      "installChecks": [
+        "cmake/RapidJSONConfig.cmake",
+        "lib/cmake/RapidJSON/RapidJSONConfig.cmake"
+      ],
+      "cmakeExtraDefinitions": {
+        "common": [
+          "RAPIDJSON_BUILD_EXAMPLES=OFF",
+          "RAPIDJSON_BUILD_TESTS=OFF",
+          "RAPIDJSON_BUILD_DOC=OFF"
+        ]
+      }
+    },
+    {
+      "name": "eigen",
+      "srcUrl": "https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.zip",
+      "downloadPkg": "eigen-3.3.7.zip",
+      "extractDir": "eigen-3.3.7",
+      "installChecks": [
+        "share/eigen3/cmake/Eigen3Config.cmake"
+      ],
+      "cmakeExtraDefinitions": {
+        "common": [
+          "CMAKE_CXX_STANDARD=17"
+        ]
+      }
+    },
+    {
+      "name": "curl",
+      "srcUrl": "https://github.com/curl/curl/releases/download/curl-7_69_1/curl-7.69.1.zip",
+      "downloadPkg": "curl-7.69.1.zip",
+      "extractDir": "curl-7.69.1",
+      "cmakeExtraDefinitions": {
+        "common": [
+          "HTTP_ONLY=ON",
+          "BUILD_SHARED_LIBS=ON",
+          "BUILD_CURL_EXE=OFF",
+          "CURL_STATIC_CRT=ON"
+        ]
+      },
+      "installChecks": [
+        "lib/cmake/CURL/CURLConfig.cmake"
+      ],
+      "architectures": [
+        "NONE"
+      ]
+    }
+  ]
+}

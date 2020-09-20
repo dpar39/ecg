@@ -11,7 +11,6 @@ class ECGSignalTests : public ::testing::Test
 protected:
     ECGSignalSPtr m_ecgSignal;
 
-
     void InitializeFromFile(const std::string &fileName = "data/hrecg5min/p003")
     {
         auto fullPath = resolvePath(fileName);

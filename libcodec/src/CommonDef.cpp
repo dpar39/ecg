@@ -54,9 +54,9 @@ void       InverseDPCM(short *x, int vLen)
 }
 double     calculate_aml(short **seq, int seq_len)
 {
-    register short **end = seq + seq_len - 1,
+    short **end = seq + seq_len - 1,
     *s1, *s2;
-    register unsigned count = 0;
+    unsigned count = 0;
 
     while (seq < end)
     {
@@ -72,7 +72,7 @@ double     lpc0(short *x, unsigned xLen)
     __int64 r0_int = x[0]*x[0];
     __int64 r1_int = 0; 
 
-    for(register unsigned i = 1; i < xLen; i++)
+    for(unsigned i = 1; i < xLen; i++)
     {
         r0_int += x[i]*x[i];
         r1_int += x[i]*x[i-1];
