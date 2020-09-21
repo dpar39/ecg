@@ -1,9 +1,6 @@
 //---------------------------------------------------------------------------
-#include <string.h>
-#include <stdio.h>
-
 #include <cmath>
-#include <windows.h>
+#include <fstream>
 
 #include "TSignal.h"
 #include "CommonDef.h"
@@ -54,6 +51,7 @@ Signal::~Signal()
 ///////////////////////////////////////////////////////////////////////////
 void   Signal::readECG(const std::string& ecgFilePath)
 {
+    using namespace std;
     for (unsigned j = 0; j < 4; j++)
     {
         if (ch[j])
@@ -64,8 +62,7 @@ void   Signal::readECG(const std::string& ecgFilePath)
     }
 
     m_numSamples = 0;
-
-    auto extension = std::filesystem::extension(ecgFilePath);
+    auto extension = ecgFilePath.substr(ecgFilePath.find_last_of(".") + 1);
 
     using namespace std;
 
@@ -75,7 +72,7 @@ void   Signal::readECG(const std::string& ecgFilePath)
     auto fileSize = fptr.tellg();
     fptr.seekg(std::ios::beg);
 
-    vector<BYTE> data;
+    vector<uint8_t> data;
     data.reserve(fileSize);
     data.assign(istream_iterator<char>(fptr), istream_iterator<char>());
 
@@ -116,7 +113,7 @@ void   Signal::readECG(const std::string& ecgFilePath)
 ///////////////////////////////////////////////////////////////////////////
 //   Write ECG Signal to file in .DAT format or .ECG compressed format   //
 ///////////////////////////////////////////////////////////////////////////
-double Signal::saveECG(const char * file_name)
+double Signal::saveECG(const std::string & file_name)
 {
     char file_extension[10];
     strncpy(file_extension, file_name + strlen(file_name) - 3,  3); file_extension[3] = '\0';
@@ -141,13 +138,13 @@ double Signal::saveECG(const char * file_name)
                 data += 3;
             }
             fwrite(data_begin, 1, 3*samples_to_save, fptr);
-            fclose(fptr); 
+            fclose(fptr);
             delete []data_begin;
             return 1.0;   //No compression in DAT format
         }
         else if( !strcmp(file_extension, "ECG" ))
         {
-            FILE *fptr = fopen(file_name, "wb");
+            std::ofstream fptr(file_name, ios::binary);
             m_numChannels = 2;
 
             if(!SaveSpecifiedChannel)
@@ -168,9 +165,9 @@ double Signal::saveECG(const char * file_name)
                 delete []signal_enc;
             }
 
-            double filesize = ftell(fptr);
-            fclose(fptr);
-            if(SaveSpecifiedChannel)
+            double filesize = fptr.ftell();
+
+            if (SaveSpecifiedChannel)
                 return samples_to_save*1.5/filesize;      //1 byte and a half for each sample in each channel
             else
                 return samples_to_save*m_numChannels*1.5/filesize;
@@ -273,10 +270,10 @@ BYTE * Signal::CompressLead(short *s, int s_len, int &enc_len)
 }
 short* Signal::ExpandLead(BYTE *&stream, int &s_len)
 {
-    short *aprx, *dtls, *x;                   //Aproximant and details after decomposition
-    int aprx_len = 0, dtls_len = 0;           //Apriximant and details array lengths
-    BYTE *aprx_enc, *dtls_enc;	              //Aproximant and details streams
-    int aprx_dec_len = 0, dtls_dec_len = 0;   //Apriximant and details array lengths
+    short *aprx, *dtls, *x;                   //Approximant and details after decomposition
+    int aprx_len = 0, dtls_len = 0;           //Approximant and details array lengths
+    BYTE *aprx_enc, *dtls_enc;	              //Approximant and details streams
+    int aprx_dec_len = 0, dtls_dec_len = 0;   //Approximant and details array lengths
     int level;
 
     if(UseSplusPTransform)
@@ -308,7 +305,7 @@ short* Signal::ExpandLead(BYTE *&stream, int &s_len)
         aprx_len = bwS.output_len;
         dtls = bwD.symbols;
         dtls_len = bwD.output_len;
-        
+
         s_len = aprx_len + dtls_len;
         x = InverseSPTransformBlock(aprx, dtls, s_len);
         delete []aprx; delete []dtls;
@@ -329,7 +326,7 @@ void   Signal::ForwardSPTransformBlock(short *x, int len, short *&s, short *&d)
 {
     int half = len/2;
     d = new short[half+2];     //details
-    s = new short[half+2];     //aproximants
+    s = new short[half+2];     //approximants
     short *pd, *ps, *pd1, *px; //sweep pointers
 
     short *d1 = new short[half+1];
@@ -356,6 +353,7 @@ void   Signal::ForwardSPTransformBlock(short *x, int len, short *&s, short *&d)
     }
     delete []d1;
 }
+
 short *Signal::InverseSPTransformBlock(short *s, short *d, int len)
 {
     int half = len/2;

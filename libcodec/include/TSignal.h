@@ -1,9 +1,7 @@
-#ifndef ECGSignalH
-#define ECGSignalH
+#pragma once
 
 #include "BWCoder.h"
 #include "CommonDef.h"
-#include <cmath>
 #include <string>
 #include <vector>
 
@@ -20,7 +18,6 @@ private:
 
 public:
     //FIELDS
-    char FileName[256]; //Full file name of the signal
 
     std::vector<int16_t> m_channels[4];
 
@@ -62,4 +59,4 @@ public:
     void readECG(const std::string& ecgFilePath);
     double saveECG(const char* file_name);
 };
-#endif
+

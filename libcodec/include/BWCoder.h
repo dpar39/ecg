@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------------
 
-#ifndef BWCoderH
-#define BWCoderH
+#pragma once
+
 #include "CommonDef.h"
 #define NO_SORT    0
 #define DESCENDING 1
@@ -14,7 +14,6 @@
 //////////////////////////////////////////////////
 struct BWC
 {
-
     double bwc_time, bwt_time, ivr_time, enc_time;
     unsigned input_len, output_len;
     bool Convert2UIntBeforeBWT;
@@ -22,8 +21,10 @@ struct BWC
     int alphaLen;
     int SortMode; //Sort mode of the symbols by thier frequency of occurrence
     int E2Level;
-
     unsigned m_bwtIndex;
+
+
+
     short* symbols;
     BYTE* stream;
  };
@@ -42,4 +43,4 @@ int* GetInversePermutation(int* F, short& range, int sort_mode);
 int EstimateStreamLength(int* F, int range, int seq_len);
 void ssort2(short** a, int n, int depth);
 
-#endif
+

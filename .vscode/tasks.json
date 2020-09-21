@@ -1,0 +1,96 @@
+{
+    "version": "2.0.0",
+    "linux": {
+        "options": {
+            "env": {
+                "python": "python3"
+            }
+        }
+    },
+    "windows": {
+        "options": {
+            "env": {
+                "python": "python.exe"
+            }
+        }
+    },
+    "tasks": [
+        {
+            "label": "Angular Serve",
+            "script": "start",
+            "type": "npm",
+            "options": {
+                "cwd": "${workspaceFolder}/webapp"
+            },
+            "group": "build",
+            "problemMatcher": {
+                "owner": "typescript",
+                "source": "ts",
+                "applyTo": "allDocuments",
+                "fileLocation": [
+                    "relative",
+                    "${cwd}"
+                ],
+                "pattern": {
+                    "regexp": "^\\s*(?:ERROR in )?([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "code": 5,
+                    "message": 6
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": {
+                        "regexp": "Compiling\\.\\.\\.$"
+                    },
+                    "endsPattern": {
+                        "regexp": "Compiled successfully\\.$|Failed to compile"
+                    }
+                }
+            },
+            "isBackground": true
+        },
+        {
+            "label": "Build x64 Debug",
+            "command": "python scripts/build.py -bdebug -a x64",
+            "type": "shell",
+            "problemMatcher": {
+                "base": "$msCompile",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/build_windows_debug_x64"
+                ],
+            },
+            "group": "build"
+        },
+        {
+            "label": "Build x64 Release",
+            "command": "python scripts/build.py -brelease -a x64",
+            "type": "shell",
+            "problemMatcher": {
+                "base": "$msCompile",
+                "fileLocation": [
+                    "relative",
+                    "${workspaceFolder}/build_windows_release_x64"
+                ],
+            },
+            "group": "build",
+        },
+        {
+            "label": "WASM Build",
+            "command": "python scripts/build.py -brelease -a wasm",
+            "type": "shell",
+            "problemMatcher": [],
+            "group": "build",
+        },
+        {
+            "label": "CI All",
+            "command": "python scripts/build.py -brelease -a x64 wasm web --test",
+            "type": "shell",
+            "problemMatcher": [],
+            "group": "build",
+        },
+    ]
+}
